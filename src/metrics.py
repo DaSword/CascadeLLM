@@ -85,6 +85,7 @@ class Metrics:
         total = len(self.records)
         baseline = total * SETTINGS.costs.cloud_gpu_usd
         edge_handled = (by_tier.get("cache", 0) + by_tier.get("edge", 0)) / total
+        latency_mean = sum(all_lat) / total
 
         return {
             "total": total,
@@ -96,10 +97,13 @@ class Metrics:
             "egress_bytes": egress,
             "latency_p50_ms": round(_percentile(all_lat, 0.50), 1),
             "latency_p95_ms": round(_percentile(all_lat, 0.95), 1),
+            "latency_mean_ms": round(latency_mean, 1),
             "latency_by_tier": {
                 k: {
                     "p50": round(_percentile(v, 0.50), 1),
                     "p95": round(_percentile(v, 0.95), 1),
+                    "mean": round(sum(v) / len(v), 1) if v else 0.0,
+                    "weighted_ms": round(sum(v) / total, 1) if v else 0.0,
                     "count": len(v),
                 }
                 for k, v in per_tier.items()

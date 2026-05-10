@@ -568,7 +568,7 @@
       </div>
 
       <div class="panel span2">
-        <h3>latency by tier (p50 / p95)</h3>
+        <h3>latency by tier — raw mean vs. contribution to typical request</h3>
         <canvas id="latency-chart"></canvas>
       </div>
       <div class="panel">
@@ -682,12 +682,16 @@
           labels: ["cache", "edge", "cloud"],
           datasets: [
             {
-              label: "p50", data: [0, 0, 0],
-              backgroundColor: ["#5fb1ff", "#7cf2c6", "#ff6b8b"]
+              label: "raw mean (per request on this tier)",
+              data: [0, 0, 0],
+              backgroundColor: ["rgba(95,177,255,0.25)", "rgba(124,242,198,0.25)", "rgba(255,107,139,0.25)"],
+              borderColor: ["#5fb1ff", "#7cf2c6", "#ff6b8b"],
+              borderWidth: 1,
             },
             {
-              label: "p95", data: [0, 0, 0],
-              backgroundColor: ["rgba(95,177,255,0.4)", "rgba(124,242,198,0.4)", "rgba(255,107,139,0.4)"]
+              label: "contribution to typical request",
+              data: [0, 0, 0],
+              backgroundColor: ["#5fb1ff", "#7cf2c6", "#ff6b8b"],
             },
           ],
         },
@@ -697,7 +701,18 @@
             x: { ticks: { color: text }, grid: { color: grid } },
             y: { ticks: { color: text, callback: v => v + " ms" }, grid: { color: grid } },
           },
-          plugins: { legend: { labels: { color: text } } },
+          plugins: {
+            legend: { labels: { color: text } },
+            tooltip: {
+              callbacks: {
+                label: (c) => {
+                  const meta = latencyChart._tierMeta?.[c.label] || {};
+                  const share = meta.share != null ? ` · ${(meta.share * 100).toFixed(0)}% of traffic` : "";
+                  return `${c.dataset.label}: ${c.parsed.y.toFixed(1)} ms${share}`;
+                },
+              },
+            },
+          },
         },
       });
     }
@@ -735,12 +750,18 @@
       tierChart.update("none");
 
       const lbt = a.latency_by_tier || {};
+      const total = a.total || 0;
       latencyChart.data.datasets[0].data = [
-        lbt.cache?.p50 || 0, lbt.edge?.p50 || 0, lbt.cloud?.p50 || 0,
+        lbt.cache?.mean || 0, lbt.edge?.mean || 0, lbt.cloud?.mean || 0,
       ];
       latencyChart.data.datasets[1].data = [
-        lbt.cache?.p95 || 0, lbt.edge?.p95 || 0, lbt.cloud?.p95 || 0,
+        lbt.cache?.weighted_ms || 0, lbt.edge?.weighted_ms || 0, lbt.cloud?.weighted_ms || 0,
       ];
+      latencyChart._tierMeta = {
+        cache: { share: total ? (lbt.cache?.count || 0) / total : 0 },
+        edge: { share: total ? (lbt.edge?.count || 0) / total : 0 },
+        cloud: { share: total ? (lbt.cloud?.count || 0) / total : 0 },
+      };
       latencyChart.update("none");
     }
 
