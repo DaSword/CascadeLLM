@@ -22,6 +22,7 @@ A live dashboard shows, in real time, how much money you saved vs. sending every
 - **Tier funnel** — pie chart of cache vs. edge vs. cloud requests.
 - **System panel** — current edge/cloud model, cache occupancy, similarity threshold.
 - **Live demo console** (right sidebar) — type a question and see exactly which tier handled it, how long it took, and what the cached match looked like (if any).
+<img width="2522" height="1318" alt="image" src="https://github.com/user-attachments/assets/fa22f78e-40e4-44f7-ba7b-6d1e5d0b41f7" />
 
 ## A 5-minute live demo flow
 
