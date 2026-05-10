@@ -1,0 +1,36 @@
+[project]
+name = "cascade-demo"
+version = "0.1.0"
+description = "Cascade LLM inference demo: cache + edge SLM + cloud GPU escalation"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115",
+    "uvicorn[standard]>=0.32",
+    "httpx>=0.27",
+    "sse-starlette>=2.1",
+    "hnswlib>=0.8",
+    "sentence-transformers>=3.3",
+    "rank-bm25>=0.2.2",
+    "numpy>=1.26",
+    "pydantic>=2.9",
+]
+
+[project.optional-dependencies]
+dev = ["ruff>=0.7"]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = ["cache", "config", "embeddings", "metrics", "retriever", "router", "server"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["llm*"]
+namespaces = true
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"

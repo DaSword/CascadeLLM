@@ -1,0 +1,966 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Cascade Demo — Cheaper. Faster. Private.</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='14' cy='32' r='10' fill='%235fb1ff'/><circle cx='32' cy='32' r='10' fill='%237cf2c6'/><circle cx='50' cy='32' r='10' fill='%23ff6b8b'/></svg>" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --panel: #121826;
+      --panel2: #182032;
+      --line: #1f2a40;
+      --text: #e6edf6;
+      --muted: #8a98b3;
+      --accent: #7cf2c6;
+      --warn: #ffd166;
+      --hot: #ff6b8b;
+      --edge: #7cf2c6;
+      --cache: #5fb1ff;
+      --cloud: #ff6b8b;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      height: 100%;
+    }
+
+    body {
+      font: 14px/1.45 -apple-system, system-ui, Segoe UI, Roboto, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      padding: 18px 24px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: 0.4px;
+    }
+
+    header h1 span {
+      color: var(--muted);
+      font-weight: 400;
+      margin-left: 12px;
+      font-size: 13px;
+    }
+
+    .pill {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 100px;
+      background: var(--panel2);
+      color: var(--muted);
+      font-size: 12px;
+      margin-left: 8px;
+    }
+
+    .pill.live {
+      color: var(--accent);
+    }
+
+    .pill.mock {
+      color: var(--warn);
+    }
+
+    main {
+      flex: 1 1 0;
+      min-width: 0;
+      overflow-y: auto;
+      padding: 18px 24px 64px;
+      display: grid;
+      gap: 18px;
+      grid-template-columns: 1fr 1fr 1fr;
+      align-content: start;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 16px;
+    }
+
+    .panel h3 {
+      margin: 0 0 8px;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .big {
+      grid-column: span 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .big .num {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+
+    .big .sub {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .num.accent {
+      color: var(--accent);
+    }
+
+    .num.warn {
+      color: var(--warn);
+    }
+
+    .num.hot {
+      color: var(--hot);
+    }
+
+    .span2 {
+      grid-column: span 2;
+    }
+
+    .span3 {
+      grid-column: span 3;
+    }
+
+    .row-bigs {
+      display: grid;
+      grid-column: span 3;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    td,
+    th {
+      padding: 6px 8px;
+      text-align: left;
+      border-bottom: 1px solid var(--line);
+    }
+
+    th {
+      color: var(--muted);
+      font-weight: 500;
+      font-size: 11px;
+      text-transform: uppercase;
+    }
+
+    td.tier-cache {
+      color: var(--cache);
+    }
+
+    td.tier-edge {
+      color: var(--edge);
+    }
+
+    td.tier-cloud {
+      color: var(--cloud);
+    }
+
+    .controls {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font: inherit;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: var(--line);
+    }
+
+    canvas {
+      max-height: 220px;
+    }
+
+    .feed {
+      max-height: 220px;
+      overflow: auto;
+    }
+
+    .layout {
+      flex: 1 1 0;
+      min-height: 0;
+      display: flex;
+      align-items: stretch;
+      gap: 0;
+    }
+
+    .sidebar {
+      flex: 0 0 42%;
+      max-width: 640px;
+      min-width: 360px;
+      height: 100%;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      padding: 18px 20px 24px;
+      background: linear-gradient(180deg, rgba(124, 242, 198, 0.045), rgba(11, 15, 23, 0) 240px), var(--panel);
+      border-left: 3px solid var(--accent);
+      transition: flex-basis 0.22s ease, padding 0.22s ease, min-width 0.22s ease;
+      position: relative;
+    }
+
+    .sidebar::before {
+      content: "DEMO CONSOLE";
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--accent);
+      padding-bottom: 10px;
+      padding-right: 28px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 2px;
+    }
+
+    .sidebar>.panel {
+      background: var(--panel2);
+    }
+
+    .sidebar-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--panel2);
+      color: var(--accent);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      padding: 0;
+      transition: transform 0.22s ease, background 0.15s ease;
+      z-index: 2;
+    }
+
+    .sidebar-toggle:hover {
+      background: var(--line);
+    }
+
+    .sidebar.collapsed .sidebar-toggle {
+      transform: rotate(180deg);
+    }
+
+    .sidebar-collapsed-label {
+      display: none;
+      writing-mode: vertical-rl;
+      transform: rotate(180deg);
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--accent);
+      margin-top: 36px;
+      text-align: center;
+    }
+
+    .sidebar.collapsed {
+      flex: 0 0 44px;
+      max-width: 44px;
+      min-width: 44px;
+      padding: 12px 4px;
+      gap: 0;
+    }
+
+    .sidebar.collapsed::before,
+    .sidebar.collapsed>.panel {
+      display: none;
+    }
+
+    .sidebar.collapsed .sidebar-collapsed-label {
+      display: block;
+    }
+
+    .sidebar textarea {
+      width: 100%;
+      min-height: 72px;
+      resize: vertical;
+      background: var(--panel2);
+      color: var(--text);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px;
+      font: inherit;
+    }
+
+    .sidebar textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .ask-btn {
+      width: 100%;
+      margin-top: 8px;
+      padding: 8px 12px;
+      font-weight: 600;
+      background: var(--accent);
+      color: #0b0f17;
+      border: 0;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .ask-btn:disabled {
+      opacity: 0.5;
+      cursor: progress;
+    }
+
+    .live-result {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tier-pill {
+      display: inline-block;
+      padding: 2px 10px;
+      border-radius: 100px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .tier-pill.cache {
+      background: rgba(95, 177, 255, 0.18);
+      color: var(--cache);
+    }
+
+    .tier-pill.edge {
+      background: rgba(124, 242, 198, 0.18);
+      color: var(--edge);
+    }
+
+    .tier-pill.cloud {
+      background: rgba(255, 107, 139, 0.18);
+      color: var(--cloud);
+    }
+
+    .live-meta {
+      display: flex;
+      gap: 12px;
+      align-items: baseline;
+      flex-wrap: wrap;
+    }
+
+    .live-meta .latency {
+      font-size: 22px;
+      font-weight: 700;
+    }
+
+    .live-meta .small {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .live-answer {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 10px 12px;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-size: 13px;
+      max-height: 280px;
+      overflow: auto;
+    }
+
+    .live-empty {
+      color: var(--muted);
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    .cache-matched {
+      font-size: 11px;
+      color: var(--cache);
+      background: rgba(95, 177, 255, 0.08);
+      border-left: 2px solid var(--cache);
+      padding: 6px 10px;
+      border-radius: 4px;
+    }
+
+    .cache-matched em {
+      color: var(--text);
+      font-style: normal;
+    }
+
+    .no-source {
+      font-size: 11px;
+      color: var(--warn);
+      background: rgba(255, 209, 102, 0.08);
+      border-left: 2px solid var(--warn);
+      padding: 6px 10px;
+      border-radius: 4px;
+    }
+
+    .pending {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .pending-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 13px;
+    }
+
+    .pending-elapsed-wrap {
+      font-size: 11px;
+      color: var(--muted);
+      padding-left: 18px;
+    }
+
+    .pending-elapsed {
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .pending-tier {
+      color: var(--muted);
+      margin-left: 4px;
+    }
+
+    .pending-tier.active {
+      color: var(--accent);
+    }
+
+    .pulse {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 1.2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 0.3;
+        transform: scale(0.85);
+      }
+
+      50% {
+        opacity: 1;
+        transform: scale(1.15);
+      }
+    }
+
+    .live-history {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      max-height: 200px;
+      overflow: auto;
+    }
+
+    .live-history-item {
+      background: var(--panel2);
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .live-history-item:hover {
+      background: var(--line);
+    }
+
+    .live-history-item .q {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>
+      Cascade <span>cache → edge → cloud</span>
+    </h1>
+  </header>
+  <div class="layout">
+    <main>
+      <div class="row-bigs">
+        <div class="panel big">
+          <div class="sub">$ saved vs all-cloud</div>
+          <div class="num accent" id="big-saved">$0.00</div>
+          <div class="sub" id="big-saved-pct">0% reduction</div>
+        </div>
+        <div class="panel big">
+          <div class="sub">% handled at edge</div>
+          <div class="num" id="big-edge">0%</div>
+          <div class="sub" id="big-tier-mix">cache 0 · edge 0 · cloud 0</div>
+        </div>
+        <div class="panel big">
+          <div class="sub">median TTFT</div>
+          <div class="num warn" id="big-p50">— ms</div>
+          <div class="sub" id="big-p95">p95 — ms</div>
+        </div>
+        <div class="panel big">
+          <div class="sub">requests served</div>
+          <div class="num" id="big-total">0</div>
+          <div class="sub" id="big-egress">0 KB egressed from edge</div>
+        </div>
+      </div>
+
+      <div class="panel span2">
+        <h3>cumulative cost — actual vs all-cloud baseline</h3>
+        <canvas id="cost-chart"></canvas>
+      </div>
+      <div class="panel">
+        <h3>tier funnel</h3>
+        <canvas id="tier-chart"></canvas>
+      </div>
+
+      <div class="panel span2">
+        <h3>latency by tier (p50 / p95)</h3>
+        <canvas id="latency-chart"></canvas>
+      </div>
+      <div class="panel">
+        <h3>system</h3>
+        <div style="display:flex; flex-direction:column; gap:6px; font-size:12px;">
+          <div><span style="color:var(--muted);">edge</span> <span id="info-edge-model">—</span></div>
+          <div><span style="color:var(--muted);">cloud</span> <span id="info-cloud-model">—</span> <span
+              id="info-cloud-mode" class="pill"></span></div>
+          <div><span style="color:var(--muted);">cache</span> <span id="info-cache-entries">0</span> / <span
+              id="info-cache-capacity">0</span> entries · hits <span id="info-cache-hits">0</span></div>
+          <div><span style="color:var(--muted);">similarity threshold</span> <span id="info-threshold">—</span></div>
+        </div>
+      </div>
+
+      <div class="panel span3">
+        <h3>recent requests</h3>
+        <div class="feed">
+          <table>
+            <thead>
+              <tr>
+                <th>tier</th>
+                <th>latency</th>
+                <th>cost</th>
+                <th>egress</th>
+                <th>time</th>
+              </tr>
+            </thead>
+            <tbody id="feed-body"></tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+
+    <aside class="sidebar" id="sidebar">
+      <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar" title="Collapse">›</button>
+      <div class="sidebar-collapsed-label">DEMO CONSOLE</div>
+      <div class="panel">
+        <h3>live query</h3>
+        <textarea id="query-input" placeholder="How many pto days do I get?..."></textarea>
+        <button id="ask-btn" class="ask-btn" onclick="submitQuery()">Ask</button>
+      </div>
+      <div class="panel">
+        <h3>latest answer</h3>
+        <div id="live-result" class="live-result">
+          <div class="live-empty">No queries yet. Type a question above.</div>
+        </div>
+      </div>
+      <div class="panel">
+        <h3>your recent queries</h3>
+        <div id="live-history" class="live-history">
+          <div class="live-empty">—</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    const fmtUsd = n => `$${(n ?? 0).toFixed(3)}`;
+    const fmtMs = n => `${(n ?? 0).toFixed(0)} ms`;
+    const fmtKB = n => `${((n ?? 0) / 1024).toFixed(1)} KB`;
+
+    const series = { ts: [], actual: [], baseline: [] };
+    let costChart, tierChart, latencyChart;
+
+    function initCharts() {
+      const grid = "#1f2a40";
+      const text = "#e6edf6";
+      const ctx = id => document.getElementById(id).getContext("2d");
+
+      costChart = new Chart(ctx("cost-chart"), {
+        type: "line",
+        data: {
+          labels: [],
+          datasets: [
+            {
+              label: "all-cloud baseline", data: [], borderColor: "#ff6b8b",
+              backgroundColor: "rgba(255,107,139,0.12)", fill: true, tension: 0.25, pointRadius: 0
+            },
+            {
+              label: "actual", data: [], borderColor: "#7cf2c6",
+              backgroundColor: "rgba(124,242,198,0.18)", fill: true, tension: 0.25, pointRadius: 0
+            },
+          ],
+        },
+        options: {
+          animation: false, responsive: true,
+          scales: {
+            x: { ticks: { color: text }, grid: { color: grid } },
+            y: { ticks: { color: text, callback: v => "$" + v.toFixed(2) }, grid: { color: grid } },
+          },
+          plugins: { legend: { labels: { color: text } } },
+        },
+      });
+
+      tierChart = new Chart(ctx("tier-chart"), {
+        type: "doughnut",
+        data: {
+          labels: ["cache", "edge", "cloud"],
+          datasets: [{
+            data: [0, 0, 0],
+            backgroundColor: ["#5fb1ff", "#7cf2c6", "#ff6b8b"],
+            borderColor: "#0b0f17",
+          }],
+        },
+        options: { plugins: { legend: { labels: { color: text } } } },
+      });
+
+      latencyChart = new Chart(ctx("latency-chart"), {
+        type: "bar",
+        data: {
+          labels: ["cache", "edge", "cloud"],
+          datasets: [
+            {
+              label: "p50", data: [0, 0, 0],
+              backgroundColor: ["#5fb1ff", "#7cf2c6", "#ff6b8b"]
+            },
+            {
+              label: "p95", data: [0, 0, 0],
+              backgroundColor: ["rgba(95,177,255,0.4)", "rgba(124,242,198,0.4)", "rgba(255,107,139,0.4)"]
+            },
+          ],
+        },
+        options: {
+          animation: false, responsive: true,
+          scales: {
+            x: { ticks: { color: text }, grid: { color: grid } },
+            y: { ticks: { color: text, callback: v => v + " ms" }, grid: { color: grid } },
+          },
+          plugins: { legend: { labels: { color: text } } },
+        },
+      });
+    }
+
+    function applyAggregates(a) {
+      document.getElementById("big-saved").textContent = fmtUsd(a.cost_saved_usd);
+      const pctSaved = a.cost_baseline_usd > 0
+        ? (100 * a.cost_saved_usd / a.cost_baseline_usd).toFixed(0) : 0;
+      document.getElementById("big-saved-pct").textContent = `${pctSaved}% reduction`;
+
+      document.getElementById("big-edge").textContent = `${a.edge_handled_pct.toFixed(0)}%`;
+      const t = a.by_tier || {};
+      document.getElementById("big-tier-mix").textContent =
+        `cache ${t.cache || 0} · edge ${t.edge || 0} · cloud ${t.cloud || 0}`;
+
+      document.getElementById("big-p50").textContent = fmtMs(a.latency_p50_ms);
+      document.getElementById("big-p95").textContent = "p95 " + fmtMs(a.latency_p95_ms);
+
+      document.getElementById("big-total").textContent = (a.total || 0).toLocaleString();
+      document.getElementById("big-egress").textContent =
+        `${fmtKB(a.egress_bytes)} egressed from edge`;
+
+      series.ts.push(new Date().toLocaleTimeString().slice(3));
+      series.actual.push(a.cost_actual_usd);
+      series.baseline.push(a.cost_baseline_usd);
+      if (series.ts.length > 200) {
+        series.ts.shift(); series.actual.shift(); series.baseline.shift();
+      }
+      costChart.data.labels = series.ts;
+      costChart.data.datasets[0].data = series.baseline;
+      costChart.data.datasets[1].data = series.actual;
+      costChart.update("none");
+
+      tierChart.data.datasets[0].data = [t.cache || 0, t.edge || 0, t.cloud || 0];
+      tierChart.update("none");
+
+      const lbt = a.latency_by_tier || {};
+      latencyChart.data.datasets[0].data = [
+        lbt.cache?.p50 || 0, lbt.edge?.p50 || 0, lbt.cloud?.p50 || 0,
+      ];
+      latencyChart.data.datasets[1].data = [
+        lbt.cache?.p95 || 0, lbt.edge?.p95 || 0, lbt.cloud?.p95 || 0,
+      ];
+      latencyChart.update("none");
+    }
+
+    function appendFeed(rec) {
+      const tb = document.getElementById("feed-body");
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+    <td class="tier-${rec.tier}">${rec.tier}</td>
+    <td>${rec.total_ms.toFixed(0)} ms</td>
+    <td>${fmtUsd(rec.cost_usd)}</td>
+    <td>${fmtKB(rec.edge_egress_bytes)}</td>
+    <td>${new Date(rec.ts * 1000).toLocaleTimeString()}</td>
+  `;
+      tb.prepend(tr);
+      while (tb.children.length > 50) tb.removeChild(tb.lastChild);
+    }
+
+    function applySystemInfo(j) {
+      document.getElementById("info-edge-model").textContent = j.config.edge_model;
+      document.getElementById("info-cloud-model").textContent = j.config.cloud_model || "—";
+      const cm = document.getElementById("info-cloud-mode");
+      cm.textContent = j.config.cloud_is_mock ? "mock" : "live";
+      cm.className = "pill " + (j.config.cloud_is_mock ? "mock" : "live");
+      document.getElementById("info-cache-entries").textContent = (j.cache?.entries ?? 0).toLocaleString();
+      document.getElementById("info-cache-capacity").textContent = (j.cache?.capacity ?? 0).toLocaleString();
+      document.getElementById("info-cache-hits").textContent = (j.cache?.total_hits ?? 0).toLocaleString();
+      document.getElementById("info-threshold").textContent = (j.config.threshold ?? 0).toFixed(2);
+    }
+
+    async function loadConfig() {
+      const r = await fetch("/metrics");
+      const j = await r.json();
+      applySystemInfo(j);
+      applyAggregates(j.aggregates);
+    }
+
+    async function refreshCacheStats() {
+      try {
+        const r = await fetch("/metrics");
+        const j = await r.json();
+        applySystemInfo(j);
+      } catch { }
+    }
+
+    function connectStream() {
+      const es = new EventSource("/metrics/stream");
+      es.addEventListener("snapshot", e => applyAggregates(JSON.parse(e.data)));
+      es.addEventListener("request", e => {
+        const d = JSON.parse(e.data);
+        appendFeed(d);
+        applyAggregates(d.aggregates);
+        refreshCacheStats();
+      });
+      es.onerror = () => console.warn("SSE disconnected; will reconnect");
+    }
+
+    const liveHistory = [];
+
+    function escapeHtml(s) {
+      return String(s ?? "").replace(/[&<>"]/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;",
+      })[c]);
+    }
+
+    function renderLiveResult(d) {
+      const tier = d.tier;
+      const noSource = d.confidence_reason === "no_source_in_corpus";
+      const cost = `cost ${fmtUsd(d.cost_usd)}`;
+      const sim = d.cache_similarity != null
+        ? `· similarity ${d.cache_similarity.toFixed(3)}` : "";
+      const reason = d.confidence_reason && tier !== "cache" && !noSource
+        ? `· edge ${d.confidence_reason}` : "";
+      const egress = d.edge_egress_bytes
+        ? `· egressed ${fmtKB(d.edge_egress_bytes)}` : "· stayed at edge";
+      const matched = d.cache_matched_query
+        ? `<div class="cache-matched">matched cached query: <em>${escapeHtml(d.cache_matched_query)}</em></div>`
+        : "";
+      const notFound = noSource
+        ? `<div class="no-source">no source in corpus — cloud was attempted but added nothing, so this is attributed to edge. result not cached.</div>`
+        : "";
+      document.getElementById("live-result").innerHTML = `
+        <div class="live-meta">
+          <span class="tier-pill ${tier}">${tier}</span>
+          <span class="latency">${d.total_ms.toFixed(0)} ms</span>
+        </div>
+        <div class="small" style="font-size:11px;color:var(--muted);">${cost} ${sim} ${reason} ${egress}</div>
+        ${matched}
+        ${notFound}
+        <div class="live-answer">${escapeHtml(d.answer)}</div>
+      `;
+    }
+
+    function renderLiveHistory() {
+      const el = document.getElementById("live-history");
+      if (!liveHistory.length) {
+        el.innerHTML = '<div class="live-empty">—</div>';
+        return;
+      }
+      el.innerHTML = liveHistory.map((h, i) => `
+        <div class="live-history-item" onclick="replayHistory(${i})">
+          <span class="q" title="${escapeHtml(h.query)}">${escapeHtml(h.query)}</span>
+          <span><span class="tier-pill ${h.tier}">${h.tier}</span> <span class="small">${h.total_ms.toFixed(0)}ms</span></span>
+        </div>
+      `).join("");
+    }
+
+    function replayHistory(i) {
+      renderLiveResult(liveHistory[i]);
+    }
+
+    let pendingTimer = null;
+
+    function startPendingUI() {
+      const start = performance.now();
+      const live = document.getElementById("live-result");
+      live.innerHTML = `
+        <div class="pending">
+          <div class="pending-row">
+            <span class="pulse"></span>
+            <span>routing query…
+              <span id="ptier-cache" class="pending-tier active">cache</span> ›
+              <span id="ptier-edge" class="pending-tier">edge</span> ›
+              <span id="ptier-cloud" class="pending-tier">cloud</span>
+            </span>
+          </div>
+          <div class="pending-elapsed-wrap">
+            <span class="pending-elapsed" id="pending-elapsed">0.0s</span> elapsed
+            <span style="margin-left:8px;">— first cold cloud call can take 20–40s while LM Studio loads E4B</span>
+          </div>
+        </div>
+      `;
+      const tick = () => {
+        const ms = performance.now() - start;
+        const sec = ms / 1000;
+        const el = document.getElementById("pending-elapsed");
+        if (el) el.textContent = `${sec.toFixed(1)}s`;
+        const cacheEl = document.getElementById("ptier-cache");
+        const edgeEl = document.getElementById("ptier-edge");
+        const cloudEl = document.getElementById("ptier-cloud");
+        if (!cacheEl) return;
+        if (ms < 800) {
+          cacheEl.classList.add("active"); edgeEl.classList.remove("active"); cloudEl.classList.remove("active");
+        } else if (ms < 4000) {
+          cacheEl.classList.remove("active"); edgeEl.classList.add("active"); cloudEl.classList.remove("active");
+        } else {
+          cacheEl.classList.remove("active"); edgeEl.classList.remove("active"); cloudEl.classList.add("active");
+        }
+      };
+      tick();
+      pendingTimer = setInterval(tick, 100);
+    }
+
+    function stopPendingUI() {
+      if (pendingTimer) { clearInterval(pendingTimer); pendingTimer = null; }
+    }
+
+    async function submitQuery() {
+      const input = document.getElementById("query-input");
+      const btn = document.getElementById("ask-btn");
+      const q = input.value.trim();
+      if (!q) return;
+
+      btn.disabled = true;
+      btn.textContent = "Thinking…";
+      startPendingUI();
+
+      try {
+        const r = await fetch("/query", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ query: q }),
+        });
+        if (!r.ok) throw new Error(`HTTP ${r.status}`);
+        const d = await r.json();
+        stopPendingUI();
+        renderLiveResult(d);
+        liveHistory.unshift(d);
+        if (liveHistory.length > 8) liveHistory.length = 8;
+        renderLiveHistory();
+        input.value = "";
+      } catch (e) {
+        stopPendingUI();
+        document.getElementById("live-result").innerHTML =
+          `<div class="live-empty">Error: ${escapeHtml(e.message)}</div>`;
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Ask";
+        input.focus();
+      }
+    }
+
+    function toggleSidebar() {
+      const sb = document.getElementById("sidebar");
+      const collapsed = sb.classList.toggle("collapsed");
+      const btn = sb.querySelector(".sidebar-toggle");
+      if (btn) btn.title = collapsed ? "Expand" : "Collapse";
+      try { localStorage.setItem("sidebarCollapsed", collapsed ? "1" : "0"); } catch { }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      const input = document.getElementById("query-input");
+      if (input) {
+        input.addEventListener("keydown", e => {
+          if ((e.metaKey || e.ctrlKey) && e.key === "Enter") submitQuery();
+        });
+      }
+      try {
+        if (localStorage.getItem("sidebarCollapsed") === "1") {
+          const sb = document.getElementById("sidebar");
+          if (sb) sb.classList.add("collapsed");
+          const btn = sb && sb.querySelector(".sidebar-toggle");
+          if (btn) btn.title = "Expand";
+        }
+      } catch { }
+    });
+
+    initCharts();
+    loadConfig();
+    connectStream();
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,322 @@
+[
+  {
+    "q": "How many PTO days do I get per year?",
+    "a": "Akamai employees get 20 PTO days per year, accruing at 1.67 days per month from your start date.",
+    "doc": "pto_policy"
+  },
+  {
+    "q": "When can I start using my PTO?",
+    "a": "PTO is available for use after a 30-day waiting period from your start date.",
+    "doc": "pto_policy"
+  },
+  {
+    "q": "Does unused PTO roll over?",
+    "a": "Up to 5 unused PTO days roll over to the next calendar year. Anything above 5 days as of December 31st is forfeited.",
+    "doc": "pto_policy"
+  },
+  {
+    "q": "How do I request time off?",
+    "a": "Submit PTO requests in Workday at least 7 days in advance for absences of 3+ days. Same-day requests should go directly to your manager via Slack.",
+    "doc": "pto_policy"
+  },
+  {
+    "q": "How much sick leave do I get?",
+    "a": "Akamai offers 10 days of sick leave annually. Sick leave is tracked separately from PTO and does not roll over.",
+    "doc": "pto_policy"
+  },
+  {
+    "q": "How do I submit an expense report?",
+    "a": "Submit expenses through Expensify within 30 days of the transaction date. Itemized receipts are required for any expense over $25.",
+    "doc": "expense_reports"
+  },
+  {
+    "q": "Are alcohol expenses reimbursable?",
+    "a": "Alcohol is only reimbursable when included in a client meal.",
+    "doc": "expense_reports"
+  },
+  {
+    "q": "Whats the limit for client meals?",
+    "a": "Client meals are reimbursable up to $75 per person.",
+    "doc": "expense_reports"
+  },
+  {
+    "q": "How long does expense reimbursement take?",
+    "a": "Reimbursement is processed bi-weekly via direct deposit and typically arrives 7-10 business days after approval.",
+    "doc": "expense_reports"
+  },
+  {
+    "q": "Can I expense first class flights?",
+    "a": "First-class and business-class airfare are not reimbursable without prior VP approval.",
+    "doc": "expense_reports"
+  },
+  {
+    "q": "What if I forgot to submit an expense within 30 days?",
+    "a": "Expenses submitted after 30 days require VP-level approval and may be denied.",
+    "doc": "expense_reports"
+  },
+  {
+    "q": "When is open enrollment?",
+    "a": "Open enrollment runs from November 1 through November 15 each year.",
+    "doc": "benefits_enrollment"
+  },
+  {
+    "q": "How long do new hires have to enroll in benefits?",
+    "a": "New hires have 30 days from their start date to enroll in benefits via the Workday portal.",
+    "doc": "benefits_enrollment"
+  },
+  {
+    "q": "When does benefits coverage start?",
+    "a": "Benefits coverage begins on the first day of the month following enrollment.",
+    "doc": "benefits_enrollment"
+  },
+  {
+    "q": "Does Akamai match 401k contributions?",
+    "a": "Akamai matches 100% of 401(k) contributions up to 4% of salary, with immediate vesting.",
+    "doc": "benefits_enrollment"
+  },
+  {
+    "q": "What are the medical plan options?",
+    "a": "Three tiers: Bronze (HDHP with HSA), Silver (PPO), and Gold (PPO with low deductible). Akamai covers 80% of employee premiums and 60% of dependent premiums.",
+    "doc": "benefits_enrollment"
+  },
+  {
+    "q": "Are dental and vision covered?",
+    "a": "Yes, dental and vision are bundled together and entirely employer-paid for employees and dependents.",
+    "doc": "benefits_enrollment"
+  },
+  {
+    "q": "Can I change my benefits mid-year?",
+    "a": "Outside of open enrollment, you can only change benefits if you experience a qualifying life event such as marriage, birth, divorce, or loss of coverage. Report qualifying events within 30 days.",
+    "doc": "benefits_enrollment"
+  },
+  {
+    "q": "How much parental leave does Akamai offer?",
+    "a": "Akamai offers 16 weeks of fully paid parental leave for all new parents, regardless of gender or how the child joined the family.",
+    "doc": "parental_leave"
+  },
+  {
+    "q": "Do birthing parents get extra leave?",
+    "a": "Yes, birthing parents get an additional 6 weeks of paid medical recovery leave, for up to 22 weeks combined.",
+    "doc": "parental_leave"
+  },
+  {
+    "q": "Can I split parental leave into multiple blocks?",
+    "a": "Yes, parental leave can be taken in two blocks within the first year, with the first block being at least 4 consecutive weeks.",
+    "doc": "parental_leave"
+  },
+  {
+    "q": "How much notice do I need to give for parental leave?",
+    "a": "Notify your manager and HR at least 30 days before your planned start date when possible.",
+    "doc": "parental_leave"
+  },
+  {
+    "q": "What time do I start on my first day?",
+    "a": "Report to the office at 9:30 AM on your first day, or join the remote onboarding Zoom link sent by your recruiter.",
+    "doc": "onboarding"
+  },
+  {
+    "q": "What training do I need to complete in my first week?",
+    "a": "Security awareness, code of conduct, data handling, and the platform overview tutorial. All are available in Workday Learning.",
+    "doc": "onboarding"
+  },
+  {
+    "q": "Do I get an onboarding buddy?",
+    "a": "Yes, you'll be paired with an onboarding buddy from a different team to help you navigate Akamai culture.",
+    "doc": "onboarding"
+  },
+  {
+    "q": "What tools do I need to install on my first day?",
+    "a": "Slack, Zoom, 1Password, GitHub Enterprise, and Okta. You'll also join your team's standup and complete a first PR.",
+    "doc": "onboarding"
+  },
+  {
+    "q": "When are deploys allowed?",
+    "a": "Production deploys are allowed Monday through Thursday, 10 AM to 4 PM Pacific. No deploys on Fridays, weekends, or holidays without approved exception.",
+    "doc": "deploy_runbook"
+  },
+  {
+    "q": "How do I roll back a deploy?",
+    "a": "Click 'Rollback' in ArgoCD on the affected service. The rollback is automatic and takes 60-90 seconds.",
+    "doc": "deploy_runbook"
+  },
+  {
+    "q": "What's the deploy pre-flight checklist?",
+    "a": "Tests passing in CI, staging smoke tests green for 2+ hours, runbook updated if behavior changes, on-call notified, and feature flags configured for gradual rollout.",
+    "doc": "deploy_runbook"
+  },
+  {
+    "q": "Can I deploy on a Friday?",
+    "a": "No production deploys on Fridays without an approved exception in #release-approvals.",
+    "doc": "deploy_runbook"
+  },
+  {
+    "q": "What deploy tool do we use?",
+    "a": "Akamai uses GitOps via ArgoCD. Merging to main triggers automatic staging deploys; production requires manual approval in ArgoCD.",
+    "doc": "deploy_runbook"
+  },
+  {
+    "q": "How do I declare an incident?",
+    "a": "Type /incident declare in Slack. This creates a dedicated channel, pages on-call, and starts a status page draft.",
+    "doc": "incident_response"
+  },
+  {
+    "q": "What's the difference between SEV1 and SEV2?",
+    "a": "SEV1 is total outage or data loss affecting all customers; SEV2 is a major feature broken or degradation affecting a significant fraction of users.",
+    "doc": "incident_response"
+  },
+  {
+    "q": "When is a postmortem required?",
+    "a": "Postmortems are required for all SEV1 and SEV2 incidents and must be published within 5 business days.",
+    "doc": "incident_response"
+  },
+  {
+    "q": "How often do we send updates during a SEV1?",
+    "a": "SEV1 updates go out every 15 minutes on the status page and in #incidents.",
+    "doc": "incident_response"
+  },
+  {
+    "q": "How does the on-call rotation work?",
+    "a": "Each engineering team runs a weekly rotation, Monday 10 AM to the following Monday 10 AM Pacific. PagerDuty handles paging.",
+    "doc": "oncall"
+  },
+  {
+    "q": "How fast do I need to acknowledge a page?",
+    "a": "Within 5 minutes during business hours, 15 minutes outside business hours.",
+    "doc": "oncall"
+  },
+  {
+    "q": "How much does on-call pay?",
+    "a": "$200 per weekday on-call, $400 per weekend day, paid out the following pay period.",
+    "doc": "oncall"
+  },
+  {
+    "q": "How do I swap an on-call shift?",
+    "a": "Post in your team channel to arrange a swap, and update PagerDuty before the shift begins.",
+    "doc": "oncall"
+  },
+  {
+    "q": "How many reviewers does a PR need?",
+    "a": "At least one approval from a code owner. Two approvals are required for changes to authentication, payments, or core data models.",
+    "doc": "code_review"
+  },
+  {
+    "q": "What's the code review SLA?",
+    "a": "Reviewers should respond within one business day, or reassign / indicate when they will respond.",
+    "doc": "code_review"
+  },
+  {
+    "q": "How big should my PRs be?",
+    "a": "Under 400 lines of changed code where possible. Larger PRs require a description of the reviewing strategy.",
+    "doc": "code_review"
+  },
+  {
+    "q": "How do I set up the VPN?",
+    "a": "Akamai uses Tailscale. Download from tailscale.com or app store, sign in with your Akamai Google account via SSO, and approve the device in your authenticator.",
+    "doc": "vpn_setup"
+  },
+  {
+    "q": "Why can't I reach internal services?",
+    "a": "Make sure Tailscale is running. Internal hostnames resolve via MagicDNS only when connected.",
+    "doc": "vpn_setup"
+  },
+  {
+    "q": "What VPN does Akamai use?",
+    "a": "Akamai uses Tailscale for remote access to internal services.",
+    "doc": "vpn_setup"
+  },
+  {
+    "q": "How do I access the wiki?",
+    "a": "Connect to Tailscale and visit wiki.cat.internal.",
+    "doc": "vpn_setup"
+  },
+  {
+    "q": "How do I reset my password?",
+    "a": "On the Okta login page, click 'Need help signing in?' then 'Forgot password.' A reset link is sent to your Akamai email.",
+    "doc": "password_reset"
+  },
+  {
+    "q": "I lost my authenticator app, what do I do?",
+    "a": "Contact IT helpdesk via #it-helpdesk Slack or extension 4357. You'll need to verify your identity through a video call with a manager or HR.",
+    "doc": "password_reset"
+  },
+  {
+    "q": "What are the password requirements?",
+    "a": "Minimum 14 characters, including at least one number and one symbol. 1Password is recommended for unique passwords.",
+    "doc": "password_reset"
+  },
+  {
+    "q": "When can I get a new laptop?",
+    "a": "Akamai refreshes laptops every 3 years or when hardware fails. File a ticket in #it-helpdesk with your serial number and reason.",
+    "doc": "laptop_replacement"
+  },
+  {
+    "q": "What laptops can I choose from?",
+    "a": "The latest 14\" or 16\" MacBook Pro, or a Dell XPS 15. Custom configs need manager approval.",
+    "doc": "laptop_replacement"
+  },
+  {
+    "q": "My laptop is broken, what do I do?",
+    "a": "Remote employees get a next-business-day replacement shipped. Return the broken device within 7 days using the prepaid label. SF and NYC offices have a small loaner pool.",
+    "doc": "laptop_replacement"
+  },
+  {
+    "q": "How do I book business travel?",
+    "a": "All business travel must be booked through Navan. Bookings outside Navan are not reimbursable except in emergencies with VP approval.",
+    "doc": "travel_reimbursement"
+  },
+  {
+    "q": "What's the meal per diem?",
+    "a": "$75/day domestic, $100/day international, $125/day in NYC, SF, London, and Tokyo.",
+    "doc": "travel_reimbursement"
+  },
+  {
+    "q": "Can I rent a car for a business trip?",
+    "a": "Yes, mid-size or smaller. Larger vehicles require justification (equipment or 3+ travelers).",
+    "doc": "travel_reimbursement"
+  },
+  {
+    "q": "What's the hotel rate cap?",
+    "a": "$300/night domestic and $400/night international. Above these requires manager approval; conference rates are exempt.",
+    "doc": "travel_reimbursement"
+  },
+  {
+    "q": "How many holidays does Akamai observe?",
+    "a": "12 paid holidays per year, plus a winter shutdown from December 26 through December 30.",
+    "doc": "holidays"
+  },
+  {
+    "q": "Is the day after Thanksgiving a holiday?",
+    "a": "Yes, Thanksgiving and the Friday after are both observed.",
+    "doc": "holidays"
+  },
+  {
+    "q": "Do we get time off between Christmas and New Year's?",
+    "a": "Yes, Akamai observes a winter shutdown from December 26 through December 30. These days do not count against PTO.",
+    "doc": "holidays"
+  },
+  {
+    "q": "What if a holiday falls on a weekend?",
+    "a": "It is observed on the closest weekday.",
+    "doc": "holidays"
+  },
+  {
+    "q": "When are all-hands meetings?",
+    "a": "Every two weeks on Thursdays at 10 AM Pacific.",
+    "doc": "all_hands"
+  },
+  {
+    "q": "Where can I find the all-hands recording?",
+    "a": "Recordings are posted to the #all-hands Slack channel within 24 hours.",
+    "doc": "all_hands"
+  },
+  {
+    "q": "How long is the all-hands?",
+    "a": "45 minutes, except quarterly all-hands which run 90 minutes.",
+    "doc": "all_hands"
+  },
+  {
+    "q": "How do I submit a question for all-hands?",
+    "a": "Submit in advance via the #all-hands-questions channel or anonymously through the Pigeonhole link.",
+    "doc": "all_hands"
+  }
+]
