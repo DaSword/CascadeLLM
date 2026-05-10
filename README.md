@@ -23,44 +23,6 @@ A live dashboard shows, in real time, how much money you saved vs. sending every
 - **System panel** — current edge/cloud model, cache occupancy, similarity threshold.
 - **Live demo console** (right sidebar) — type a question and see exactly which tier handled it, how long it took, and what the cached match looked like (if any).
 
-## Setup (one-time)
-
-You'll need three things on your laptop:
-
-1. **[LM Studio](https://lmstudio.io/)** — runs the small "edge" AI on your machine. Download it, then in LM Studio:
-   - Search for and download **Gemma 4 E2B** (any quantization works — Q4 is fine)
-   - Open the **Local Server** tab and click **Start Server** (it should bind to `localhost:1234`)
-2. **A free Google Gemini API key** — get one in 30 seconds at <https://aistudio.google.com/apikey>. The free tier is plenty for this demo (1000 requests per day).
-3. **Python 3.11 or newer**.
-
-Then, from this folder, create a virtualenv and install Cascade as an editable package:
-
-```bash
-python3 -m venv .venv
-source .venv/bin/activate
-pip install --upgrade pip
-pip install -e .
-```
-
-## Running the demo
-
-```bash
-export GEMINI_API_KEY="paste-your-key-here"
-.venv/bin/uvicorn server:app
-```
-
-Open <http://localhost:8000/> in your browser.
-
-On first boot the cache **auto-seeds** with ~64 common questions from `data/seed_queries.json`, so the dashboard is useful before you fire any traffic. Subsequent starts find a populated cache and skip seeding instantly.
-
-To make the charts move, drive some traffic in another terminal:
-
-```bash
-.venv/bin/python scripts/replay.py --qps 4 --total 200
-```
-
-That fires ~200 realistic questions through the system over a few minutes — a mix of common questions, paraphrases, and a few odd ones that need the cloud.
-
 ## A 5-minute live demo flow
 
 1. **Open the dashboard.** Counters start at zero, but the **system panel** already shows ~64 cache entries — auto-seeded on boot. Briefly explain the three tiers.
